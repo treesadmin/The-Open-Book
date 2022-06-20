@@ -17,15 +17,14 @@ class Book:
     
     def generate_obk(self):
         data = bytearray()
-        line_lut = list()
         magic = bytearray("OPENBOOK", encoding='utf8')
         title = bytearray(self.title, encoding='utf8')
         author = bytearray(self.author, encoding='utf8')
         text = bytearray()
-        line_lut.append(LineInfo(0, len(title))) # first line contains title
+        line_lut = [LineInfo(0, len(title))]
         line_lut.append(LineInfo(line_lut[-1].offset + line_lut[-1].length, len(author))) # second line contains author
         paragraphs = self.text.split("\n")
-        for i in range(0, len(paragraphs)):
+        for i in range(len(paragraphs)):
             if paragraphs[i] == "":
                 paragraphs[i] = "|" # this is just to trick the word wrapper into keeping our blank lines
         for paragraph in paragraphs:
@@ -55,11 +54,10 @@ while 1:
     author = input("Author of the book: ")
     filename = input("Input text file (without extension): ")
     text = None
-    with open(filename + ".txt", 'r') as infile:
+    with open(f"{filename}.txt", 'r') as infile:
         text = infile.read()
     book = Book(title, author, text)
     output = book.generate_obk()
     print("Generated Open Book data of length", len(output))
-    outfile = open(filename + ".obk", 'wb')
-    outfile.write(output)
-    outfile.close()
+    with open(f"{filename}.obk", 'wb') as outfile:
+        outfile.write(output)
